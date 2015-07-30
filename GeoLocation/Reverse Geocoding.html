@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Reverse Geocoding</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+
+      /*
+      Provide the following styles for both ID and class,
+      where ID represents an actual existing "panel" with
+      JS bound to its name, and the class is just non-map
+      content that may already have a different ID with
+      JS bound to its name.
+      */
+
+      #panel, .panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #panel select, #panel input, .panel select, .panel input {
+        font-size: 15px;
+      }
+
+      #panel select, .panel select {
+        width: 100%;
+      }
+
+      #panel i, .panel i {
+        font-size: 12px;
+      }
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script>
+var geocoder = new google.maps.Geocoder();
+var map;
+var infowindow = new google.maps.InfoWindow();
+var marker;
+function initialize() {
+  map = new google.maps.Map(document.getElementById('map-canvas'), {
+        zoom: 8,
+        center: {lat: 40.730885, lng: -73.997383}
+      });
+}
+
+function codeLatLng() {
+  var input = document.getElementById('latlng').value;
+  var latlngStr = input.split(',', 2);
+  var latlng = new google.maps.LatLng(latlngStr[0], latlngStr[1]);
+  geocoder.geocode({'location': latlng}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      if (results[1]) {
+        map.setZoom(11);
+        marker = new google.maps.Marker({
+          position: latlng,
+          map: map
+        });
+        infowindow.setContent(results[1].formatted_address);
+        infowindow.open(map, marker);
+      } else {
+        window.alert('No results found');
+      }
+    } else {
+      window.alert('Geocoder failed due to: ' + status);
+    }
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+    <style>
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        width: 350px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+      #latlng {
+        width: 225px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="panel">
+      <input id="latlng" type="text" value="40.714224,-73.961452">
+      <input type="button" value="Reverse Geocode" onclick="codeLatLng()">
+    </div>
+    <div id="map-canvas"></div>
+  </body>
+</html>
